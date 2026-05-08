@@ -1,0 +1,65 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  /* workaround to hide the scrollbar. Best case would be the fix the actual cause */
+  overflow: hidden;
+  background-color: black;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+main {
+  text-align: center;
+  min-height: 100vh;
+  /* Height of the footer */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+h1, h2 {
+	color: white;
+	margin: 0;
+}
+#countdown {
+  font-size: 22vw;
+  font-weight: bold;
+  transition: color 0.3s ease;
+  color: #33ff33;
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+#time {
+  font-size: 5vw;
+}
+footer {
+  background-color: #444;
+  text-align: center;
+  padding: 1px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 36px;
+}
+/* Progress background */
+#timeline {
+  width: 100%;
+  height: 100%;
+  background-color: #666;
+}
+/* Actual remaining time bar */
+#progress {
+  height: 100%;
+  width: 100%;
+  background-color: limegreen;
+  transition: width 1s linear, background-color 0.3s ease;
+}
+#info {
+  position: fixed;
+  background-color: transparent;
+  color: white;
+  bottom: 25px;
+  width: 100%;
+}
