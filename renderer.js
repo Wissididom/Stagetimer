@@ -7,9 +7,8 @@ func();
 const information = document.getElementById('info')
 information.innerText = `This app is using Chrome (v${versions.chrome()}), Node.js (v${versions.node()}), and Electron (v${versions.electron()})`
 
-//const TOTAL_SECONDS = 30 * 60; // 30 minutes
-const TOTAL_SECONDS = 4 * 60; // 4 minutes
-let remaining = TOTAL_SECONDS;
+let totalSeconds = 30 * 60; // 30 minutes
+let remaining = totalSeconds;
 let timesUp = false;
 const countdown = document.getElementById('countdown');
 const progress = document.getElementById('progress');
@@ -22,7 +21,7 @@ function updateTimer() {
   countdown.textContent = countdownText;
   if (!timesUp) {
     // Progress width
-    const percent = (remaining / TOTAL_SECONDS) * 100;
+    const percent = (remaining / totalSeconds) * 100;
     progress.style.width = `${percent}%`;
     // Color thresholds
     if (remaining <= 60) {
@@ -50,8 +49,27 @@ function updateTimer() {
   	remaining++;
   }
 }
-updateTimer();
-setInterval(updateTimer, 1000);
+var countdownTimer = null;
+window.electronApi.onSetCountdownStartTime((value) => {
+  totalSeconds = value;
+  if (remaining > totalSeconds)
+    remaining = totalSeconds;
+  updateTimer();
+});
+window.electronApi.onSetCountdownRemainingTime((value) => {
+  remaining = value;
+  if (remaining > totalSeconds)
+    totalSeconds = remaining;
+  updateTimer();
+});
+window.electronApi.onStartCountdown(() => {
+  if (countdownTimer) clearInterval(countdownTimer);
+  countdownTimer = setInterval(updateTimer, 1000);
+});
+window.electronApi.onStopCountdown(() => {
+  if (countdownTimer) clearInterval(countdownTimer);
+  countdownTimer = null;
+});
 const time = document.getElementById('time');
 setInterval(() => {
   const timeString = new Date().toTimeString();
