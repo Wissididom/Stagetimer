@@ -15,8 +15,8 @@ const createWindow = (id/*: number | null*/) => {
     return display.bounds.x !== 0 || display.bounds.y !== 0;
   });
   const win = new BrowserWindow({
-    x: chosenDisplay.bounds.x,
-    y: chosenDisplay.bounds.y,
+    x: chosenDisplay.bounds.x + 5, // add 5 to make sure we are on the correct screen
+    y: chosenDisplay.bounds.y + 5, // add 5 to make sure we are on the correct screen
     frame: false,
     show: false,
     webPreferences: {
@@ -122,7 +122,21 @@ hono.post('/screen/close', (c) => {
 });
 
 hono.get('/screens', (c) => {
-  return c.json(screen.getAllDisplays());
+  const displays = screen.getAllDisplays();
+  for (let i = 0; i < displays.length; i++) {
+    delete displays[i].accelerometerSupport;
+    delete displays[i].colorDepth;
+    delete displays[i].colorSpace;
+    delete displays[i].depthPerComponent;
+    delete displays[i].detected;
+    delete displays[i].displayFrequency;
+    delete displays[i].internal;
+    delete displays[i].maximumCursorSize;
+    delete displays[i].monochrome;
+    delete displays[i].nativeOrigin;
+    delete displays[i].touchSupport;
+  }
+  return c.json(displays);
 });
 
 const httpServer = serve({
