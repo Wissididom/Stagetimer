@@ -101,7 +101,8 @@ hono.post('/screen/show', (c) => {
       message: 'Already shown. Please first close the already existing screen'
     });
   }
-  win = createWindow(/*id*/); // TODO: Get id from request
+  const { id } = await c.req.json();
+  win = createWindow(id);
   return c.json({
   	success: true
   });
