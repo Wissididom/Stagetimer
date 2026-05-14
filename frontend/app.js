@@ -5,8 +5,6 @@ const screenSelect = document.getElementById('screenSelect');
 const minutesInput = document.getElementById('minutes');
 const secondsInput = document.getElementById('seconds');
 
-const API_BASE = 'http://localhost:3000';
-
 function setStatus(data) {
   statusEl.textContent =
     typeof data === 'string'
@@ -16,7 +14,7 @@ function setStatus(data) {
 
 async function api(path, options = {}) {
   try {
-    const response = await fetch(`${API_BASE}${path}`, {
+    const response = await fetch(path, {
       headers: {
         'Content-Type': 'application/json'
       },
