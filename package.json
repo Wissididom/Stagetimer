@@ -8,7 +8,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --publish never"
+    "build": "electron-builder"
   },
   "devDependencies": {
     "electron": "^42.0.1",
@@ -18,5 +18,12 @@
     "@hono/node-server": "^2.0.2",
     "dotenv": "^17.4.2",
     "hono": "^4.12.18"
+  },
+  "build": {
+    "appId": "de.wissididom.stagetimer",
+    "extraFiles": [
+      "frontend"
+    ],
+    "publish": null
   }
 }
