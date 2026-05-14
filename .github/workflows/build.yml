@@ -36,11 +36,10 @@ jobs:
           $staging = "zip-staging"
           Remove-Item $staging -Recurse -Force -ErrorAction Ignore
           New-Item -ItemType Directory -Path $staging | Out-Null
-          $files = Get-ChildItem ./dist -Recurse -File | Where-Object {
-            $_.FullName -notmatch '-unpacked\\'
-          } | ForEach-Object {
-            Copy-Item $_.FullName -Destination $staging -Recurse
-          }
+          Copy-Item -Path ./dist/* -Destination $staging -Recurse
+          Get-ChildItem $staging -Recurse -Directory | Where-Object {
+            $_.Name -like "*-unpacked"
+          } | Remove-Item -Recurse -Force
           Compress-Archive -Path "$staging/*" -DestinationPath Stagetimer-${{ matrix.os }}.zip -Force
       - name: Compress archive (Ubuntu and Mac)
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
