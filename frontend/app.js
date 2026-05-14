@@ -73,6 +73,10 @@ document
         id: Number(screenSelect.value)
       })
     });
+    await api('/countdown/remaining-time', {
+      method: 'POST',
+      body: JSON.stringify(getTimePayload())
+    });
   });
 
 document
