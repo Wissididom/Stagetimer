@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { app, BrowserWindow, screen, ipcMain } from 'electron';
 import { serve } from '@hono/node-server';
+import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
 import * as path from 'node:path';
 
@@ -13,7 +14,7 @@ const createWindow = (id/*: number | null*/) => {
   	return display.id === id;
   }) : displays.find((display) => {
     return display.bounds.x !== 0 || display.bounds.y !== 0;
-  });
+  }) || displays[0];
   const win = new BrowserWindow({
     x: chosenDisplay.bounds.x + 5, // add 5 to make sure we are on the correct screen
     y: chosenDisplay.bounds.y + 5, // add 5 to make sure we are on the correct screen
@@ -94,7 +95,7 @@ hono.post('/countdown/stop', (c) => {
   });
 });
 
-hono.post('/screen/show', (c) => {
+hono.post('/screen/show', async (c) => {
   if (win) {
     return c.json({
       success: false,
@@ -140,6 +141,8 @@ hono.get('/screens', (c) => {
   return c.json(displays);
 });
 
+hono.get('/*', serveStatic({ root: './frontend/' }));
+
 const httpServer = serve({
   fetch: hono.fetch,
   port: parseInt(process.env.PORT)
@@ -149,7 +152,7 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 process.on('SIGTERM', () => {
-  server.close((err) => {
+  httpServer.close((err) => {
     if (err) {
       console.error(err);
       process.exit(0);

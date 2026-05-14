@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StageTimer Control</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>StageTimer</h1>
+      <section class="card">
+        <h2>Screen</h2>
+        <div class="row">
+          <select id="screenSelect"></select>
+          <button id="refreshScreensBtn">
+            Refresh Screens
+          </button>
+        </div>
+        <div class="row">
+          <button id="showScreenBtn">
+            Show Screen
+          </button>
+          <button id="closeScreenBtn" class="danger">
+            Close Screen
+          </button>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Countdown</h2>
+        <div class="time-inputs">
+          <div>
+            <label>Minutes</label>
+            <input id="minutes" type="number" min="0" value="30" />
+          </div>
+          <div>
+            <label>Seconds</label>
+            <input id="seconds" type="number" min="0" max="59" value="0" />
+          </div>
+        </div>
+        <div class="row">
+          <button id="setStartBtn">
+            Set Start Time
+          </button>
+          <button id="setRemainingBtn">
+            Set Remaining Time
+          </button>
+        </div>
+        <div class="row">
+          <button id="startBtn" class="success">
+            Start
+          </button>
+          <button id="stopBtn" class="danger">
+            Stop
+          </button>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Status</h2>
+        <pre id="status">Ready</pre>
+      </section>
+    </div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
