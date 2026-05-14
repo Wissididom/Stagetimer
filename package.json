@@ -21,8 +21,8 @@
   },
   "build": {
     "appId": "de.wissididom.stagetimer",
-    "extraFiles": [
-      "frontend"
+    "files": [
+      "frontend/*"
     ],
     "publish": null
   }
