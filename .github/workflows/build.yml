@@ -5,9 +5,9 @@ permissions:
 
 on:
   push:
-    branches: ["master", "main"]
+    branches: ["main"]
   pull_request:
-    branches: ["master", "main"]
+    branches: ["main"]
 
 jobs:
   build:
@@ -26,17 +26,22 @@ jobs:
         run: |
           npm run build
       - name: Copy additional files
+        shell: bash
         run: |
           cp -R frontend dist/frontend
           cp example.env dist/.env
       - name: Compress archive (Windows)
         if: startsWith(matrix.os, 'windows')
         run: |
-          Compress-Archive -Path ./dist/* -DestinationPath Stagetimer-${{ matrix.os }}.zip
+          $files = Get-ChildItem ./dist -Recurse -File | Where-Object {
+            $_.FullName -notmatch '-unpacked\\'
+          }
+          Compress-Archive -Path $files.FullName -DestinationPath Stagetimer-${{ matrix.os }}.zip
       - name: Compress archive (Ubuntu and Mac)
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         run: |
-          zip -r Stagetimer-${{ matrix.os }}.zip ./dist/*
+          cd dist
+          zip -r Stagetimer-${{ matrix.os }}.zip . -x '*-unpacked/*'
       - name: Upload artifact (Windows)
         if: startsWith(matrix.os, 'windows')
         uses: actions/upload-artifact@v7
