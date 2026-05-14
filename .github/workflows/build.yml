@@ -25,24 +25,36 @@ jobs:
       - name: Build executable
         run: |
           npm run build
+      - name: Copy additional files
+        run: |
+          cp -R frontend dist/frontend
+          cp example.env dist/.env
+      - name: Compress archive (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          Compress-Archive -Path ./dist/* -DestinationPath Stagetimer-${{ matrix.os }}.zip
+      - name: Compress archive (Ubuntu and Mac)
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+        run: |
+          zip -r -Path ./dist/* -DestinationPath Stagetimer-${{ matrix.os }}.zip
       - name: Upload artifact (Windows)
         if: startsWith(matrix.os, 'windows')
         uses: actions/upload-artifact@v7
         with:
           name: Stagetimer-Windows
-          path: dist/stagetimer Setup 1.0.0.exe
+          path: Stagetimer-windows-latest.zip
       - name: Upload artifact (Ubuntu)
         if: startsWith(matrix.os, 'ubuntu')
         uses: actions/upload-artifact@v7
         with:
           name: Stagetimer-Linux
-          path: dist/stagetimer-1.0.0.AppImage
+          path: Stagetimer-ubuntu-latest.zip
       - name: Upload artifact (Mac)
         if: startsWith(matrix.os, 'macos')
         uses: actions/upload-artifact@v7
         with:
           name: Stagetimer-Mac
-          path: dist/stagetimer-1.0.0-arm64.dmg
+          path: Stagetimer-macos-latest.zip
   create-release:
     needs: [build]
     runs-on: ubuntu-latest
@@ -51,25 +63,30 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         name: Checkout Code
-
       - uses: actions/download-artifact@v8
         name: Download Windows
         with:
           name: Stagetimer-Windows
           path: release-artifacts/
-
+      - name: Rename Windows archive
+        run: |
+          mv release-artifacts/Stagetimer-windows-latest.zip release-artifacts/Stagetimer-Windows.zip
       - uses: actions/download-artifact@v8
         name: Download Linux
         with:
           name: Stagetimer-Linux
           path: release-artifacts/
-
+      - name: Rename Linux archive
+        run: |
+          mv release-artifacts/Stagetimer-ubuntu-latest.zip release-artifacts/Stagetimer-Linux.zip
       - uses: actions/download-artifact@v8
         name: Download Mac
         with:
           name: Stagetimer-Mac
           path: release-artifacts/
-
+      - name: Rename Mac archive
+        run: |
+          mv release-artifacts/Stagetimer-macos-latest.zip release-artifacts/Stagetimer-Mac.zip
       - name: Create release
         uses: ncipollo/release-action@v1.21.0
         with:
@@ -81,7 +98,6 @@ jobs:
           prerelease: true
           name: Nightly Release
           tag: nightly-build
-
       - name: Update nightly-build tag
         run: |
           git tag -f nightly-build
