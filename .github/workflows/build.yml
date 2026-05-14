@@ -36,7 +36,7 @@ jobs:
       - name: Compress archive (Ubuntu and Mac)
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         run: |
-          zip -r ./dist/* Stagetimer-${{ matrix.os }}.zip
+          zip -r Stagetimer-${{ matrix.os }}.zip ./dist/*
       - name: Upload artifact (Windows)
         if: startsWith(matrix.os, 'windows')
         uses: actions/upload-artifact@v7
