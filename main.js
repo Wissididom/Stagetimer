@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { app, BrowserWindow, screen, ipcMain } from 'electron';
 import { serve } from '@hono/node-server';
+import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
 import * as path from 'node:path';
 
@@ -94,7 +95,7 @@ hono.post('/countdown/stop', (c) => {
   });
 });
 
-hono.post('/screen/show', (c) => {
+hono.post('/screen/show', async (c) => {
   if (win) {
     return c.json({
       success: false,
@@ -139,6 +140,8 @@ hono.get('/screens', (c) => {
   }
   return c.json(displays);
 });
+
+hono.get('/*', serveStatic({ root: './frontend/' }));
 
 const httpServer = serve({
   fetch: hono.fetch,
