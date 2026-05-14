@@ -33,15 +33,20 @@ jobs:
       - name: Compress archive (Windows)
         if: startsWith(matrix.os, 'windows')
         run: |
+          $staging = "zip-staging"
+          Remove-Item $staging -Recurse -Force -ErrorAction Ignore
+          New-Item -ItemType Directory -Path $staging | Out-Null
           $files = Get-ChildItem ./dist -Recurse -File | Where-Object {
             $_.FullName -notmatch '-unpacked\\'
+          } | ForEach-Object {
+            Copy-Item $_.FullName -Destination $staging -Recurse
           }
-          Compress-Archive -Path $files.FullName -DestinationPath Stagetimer-${{ matrix.os }}.zip
+          Compress-Archive -Path "$staging/*" -DestinationPath Stagetimer-${{ matrix.os }}.zip -Force
       - name: Compress archive (Ubuntu and Mac)
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         run: |
           cd dist
-          zip -r Stagetimer-${{ matrix.os }}.zip . -x '*-unpacked/*'
+          zip -r ../Stagetimer-${{ matrix.os }}.zip . -x '*-unpacked/*'
       - name: Upload artifact (Windows)
         if: startsWith(matrix.os, 'windows')
         uses: actions/upload-artifact@v7
