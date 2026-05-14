@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: Stagetimer-Windows
-          path: dist/stagetimer-1.0.0.exe
+          path: dist/stagetimer Setup 1.0.0.exe
       - name: Upload artifact (Ubuntu)
         if: startsWith(matrix.os, 'ubuntu')
         uses: actions/upload-artifact@v7
@@ -42,7 +42,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: Stagetimer-Mac
-          path: dist/stagetimer-1.0.0.dmg
+          path: dist/stagetimer-1.0.0-arm64.dmg
   create-release:
     needs: [build]
     runs-on: ubuntu-latest
