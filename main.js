@@ -14,7 +14,7 @@ const createWindow = (id/*: number | null*/) => {
   	return display.id === id;
   }) : displays.find((display) => {
     return display.bounds.x !== 0 || display.bounds.y !== 0;
-  });
+  }) || displays[0];
   const win = new BrowserWindow({
     x: chosenDisplay.bounds.x + 5, // add 5 to make sure we are on the correct screen
     y: chosenDisplay.bounds.y + 5, // add 5 to make sure we are on the correct screen
@@ -152,7 +152,7 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 process.on('SIGTERM', () => {
-  server.close((err) => {
+  httpServer.close((err) => {
     if (err) {
       console.error(err);
       process.exit(0);
