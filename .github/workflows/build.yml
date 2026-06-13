@@ -77,26 +77,16 @@ jobs:
       - uses: actions/checkout@v6
         name: Checkout Code
       - uses: actions/download-artifact@v8
-        name: Download Windows
+        name: Download artifacts
         with:
-          name: Stagetimer-Windows
           path: release-artifacts/
+          merge-multiple: true
       - name: Rename Windows archive
         run: |
           mv release-artifacts/Stagetimer-windows-latest.zip release-artifacts/Stagetimer-Windows.zip
-      - uses: actions/download-artifact@v8
-        name: Download Linux
-        with:
-          name: Stagetimer-Linux
-          path: release-artifacts/
       - name: Rename Linux archive
         run: |
           mv release-artifacts/Stagetimer-ubuntu-latest.zip release-artifacts/Stagetimer-Linux.zip
-      - uses: actions/download-artifact@v8
-        name: Download Mac
-        with:
-          name: Stagetimer-Mac
-          path: release-artifacts/
       - name: Rename Mac archive
         run: |
           mv release-artifacts/Stagetimer-macos-latest.zip release-artifacts/Stagetimer-Mac.zip
