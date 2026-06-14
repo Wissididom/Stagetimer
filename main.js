@@ -34,7 +34,7 @@ const createWindow = (id /*: number | null*/) => {
 
 app.whenReady().then(() => {
   ipcMain.handle("ping", () => "pong");
-  const tray = new Tray("/path/to/my/icon");
+  const tray = new Tray(path.join(app.isPackaged ? process.resourcesPath : import.meta.dirname, 'icon.png'));
   const contextMenu = Menu.buildFromTemplate([
     {
       label: "Quit Stagetimer",
