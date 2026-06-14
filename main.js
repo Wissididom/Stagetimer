@@ -41,6 +41,13 @@ app.on('window-all-closed', () => {
 
 const hono = new Hono();
 
+
+hono.get('/app/health', async (c) => {
+  return c.json({
+    running: true
+  });
+});
+
 hono.post('/countdown/start-time', async (c) => {
   if (win) {
     const { min, sec } = await c.req.json();
