@@ -1,136 +1,148 @@
-import 'dotenv/config';
-import { app, BrowserWindow, screen, ipcMain } from 'electron';
-import { serve } from '@hono/node-server';
-import { serveStatic } from '@hono/node-server/serve-static';
-import { Hono } from 'hono';
-import * as path from 'node:path';
+import "dotenv/config";
+import { app, BrowserWindow, ipcMain, Menu, screen, Tray } from "electron";
+import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
+import { Hono } from "hono";
+import * as path from "node:path";
 
 var ready = false;
 var win = null;
 
-const createWindow = (id/*: number | null*/) => {
+const createWindow = (id /*: number | null*/) => {
   const displays = screen.getAllDisplays();
-  const chosenDisplay = id ? displays.find((display) => {
-  	return display.id === id;
-  }) : displays.find((display) => {
-    return display.bounds.x !== 0 || display.bounds.y !== 0;
-  }) || displays[0];
+  const chosenDisplay = id
+    ? displays.find((display) => {
+      return display.id === id;
+    })
+    : displays.find((display) => {
+      return display.bounds.x !== 0 || display.bounds.y !== 0;
+    }) || displays[0];
   const win = new BrowserWindow({
     x: chosenDisplay.bounds.x + 5, // add 5 to make sure we are on the correct screen
     y: chosenDisplay.bounds.y + 5, // add 5 to make sure we are on the correct screen
     frame: false,
     show: false,
     webPreferences: {
-      preload: path.join(import.meta.dirname, 'preload.js')
-    }
+      preload: path.join(import.meta.dirname, "preload.js"),
+    },
   });
-  win.loadFile('index.html');
+  win.loadFile("index.html");
   win.maximize();
   win.show();
   return win;
-}
+};
 
 app.whenReady().then(() => {
-  ipcMain.handle('ping', () => 'pong');
+  ipcMain.handle("ping", () => "pong");
+  const tray = new Tray("/path/to/my/icon");
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "Quit Stagetimer",
+      click: () => {
+        app.quit();
+      },
+    },
+  ]);
+  tray.setToolTip("Stagetimer");
+  tray.setContextMenu(contextMenu);
   ready = true;
 });
 
-app.on('window-all-closed', () => {
+app.on("window-all-closed", () => {
   // Do nothing to prevent closing when t he window is closed from the API
-})
+});
 
 const hono = new Hono();
 
-
-hono.get('/app/health', async (c) => {
+hono.get("/app/health", async (c) => {
   return c.json({
-    running: true
+    running: true,
   });
 });
 
-hono.post('/countdown/start-time', async (c) => {
+hono.post("/countdown/start-time", async (c) => {
   if (win) {
     const { min, sec } = await c.req.json();
-    win.webContents.send('set-countdown-start-time', min * 60 + sec);
+    win.webContents.send("set-countdown-start-time", min * 60 + sec);
     return c.json({
-      success: true
+      success: true,
     });
   }
   return c.json({
     success: false,
-    message: 'Window does not exist'
+    message: "Window does not exist",
   });
 });
 
-hono.post('/countdown/remaining-time', async (c) => {
+hono.post("/countdown/remaining-time", async (c) => {
   if (win) {
     const { min, sec } = await c.req.json();
-    win.webContents.send('set-countdown-remaining-time', min * 60 + sec);
+    win.webContents.send("set-countdown-remaining-time", min * 60 + sec);
     return c.json({
-      success: true
+      success: true,
     });
   }
   return c.json({
     success: false,
-    message: 'Window does not exist'
+    message: "Window does not exist",
   });
 });
 
-hono.post('/countdown/start', (c) => {
+hono.post("/countdown/start", (c) => {
   if (win) {
-    win.webContents.send('start-countdown');
+    win.webContents.send("start-countdown");
     return c.json({
-      success: true
+      success: true,
     });
   }
   return c.json({
     success: false,
-    message: 'Window does not exist'
+    message: "Window does not exist",
   });
 });
 
-hono.post('/countdown/stop', (c) => {
+hono.post("/countdown/stop", (c) => {
   if (win) {
-    win.webContents.send('stop-countdown');
+    win.webContents.send("stop-countdown");
     return c.json({
-      success: true
+      success: true,
     });
   }
   return c.json({
     success: false,
-    message: 'Window does not exist'
+    message: "Window does not exist",
   });
 });
 
-hono.post('/screen/show', async (c) => {
+hono.post("/screen/show", async (c) => {
   if (win) {
     return c.json({
       success: false,
-      message: 'Already shown. Please first close the already existing screen'
+      message: "Already shown. Please first close the already existing screen",
     });
   }
   const { id } = await c.req.json();
   win = createWindow(id);
   return c.json({
-  	success: true
+    success: true,
   });
 });
 
-hono.post('/screen/close', (c) => {
+hono.post("/screen/close", (c) => {
   if (win) {
     win.close();
     win = null;
     return c.json({
-      success: true
+      success: true,
     });
   }
   return c.json({
     success: false,
-    message: 'Already closed. Please first show a screen'
+    message: "Already closed. Please first show a screen",
   });
 });
 
-hono.get('/screens', (c) => {
+hono.get("/screens", (c) => {
   const displays = screen.getAllDisplays();
   for (let i = 0; i < displays.length; i++) {
     delete displays[i].accelerometerSupport;
@@ -148,17 +160,17 @@ hono.get('/screens', (c) => {
   return c.json(displays);
 });
 
-hono.get('/*', serveStatic({ root: './frontend/' }));
+hono.get("/*", serveStatic({ root: "./frontend/" }));
 
 const httpServer = serve({
   fetch: hono.fetch,
-  port: parseInt(process.env.PORT)
+  port: parseInt(process.env.PORT),
 });
-process.on('SIGINT', () => {
+process.on("SIGINT", () => {
   httpServer.close();
   process.exit(0);
 });
-process.on('SIGTERM', () => {
+process.on("SIGTERM", () => {
   httpServer.close((err) => {
     if (err) {
       console.error(err);

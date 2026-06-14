@@ -19,8 +19,8 @@ main {
   align-items: center;
 }
 h1, h2 {
-	color: white;
-	margin: 0;
+  color: white;
+  margin: 0;
 }
 #countdown {
   font-size: 22vw;
