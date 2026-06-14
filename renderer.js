@@ -1,5 +1,5 @@
 const func = async () => {
-  const response = await window.versions.ping();
+  const response = await versions.ping();
   console.log(response);
 };
 func();
@@ -17,7 +17,7 @@ const progress = document.getElementById("progress");
 function updateTimer() {
   const minutes = Math.floor(remaining / 60);
   const seconds = remaining % 60;
-  var countdownText = `${String(minutes).padStart(2, "0")}:${
+  let countdownText = `${String(minutes).padStart(2, "0")}:${
     String(seconds).padStart(2, "0")
   }`;
   if (timesUp) countdownText = `-${countdownText}`;
@@ -52,26 +52,26 @@ function updateTimer() {
     remaining++;
   }
 }
-var countdownTimer = null;
-window.electronApi.onSetCountdownStartTime((value) => {
+let countdownTimer = null;
+electronApi.onSetCountdownStartTime((value) => {
   totalSeconds = value;
   if (remaining > totalSeconds) {
     remaining = totalSeconds;
   }
   updateTimer();
 });
-window.electronApi.onSetCountdownRemainingTime((value) => {
+electronApi.onSetCountdownRemainingTime((value) => {
   remaining = value;
   if (remaining > totalSeconds) {
     totalSeconds = remaining;
   }
   updateTimer();
 });
-window.electronApi.onStartCountdown(() => {
+electronApi.onStartCountdown(() => {
   if (countdownTimer) clearInterval(countdownTimer);
   countdownTimer = setInterval(updateTimer, 1000);
 });
-window.electronApi.onStopCountdown(() => {
+electronApi.onStopCountdown(() => {
   if (countdownTimer) clearInterval(countdownTimer);
   countdownTimer = null;
 });

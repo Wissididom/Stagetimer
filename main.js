@@ -5,8 +5,7 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import * as path from "node:path";
 
-var ready = false;
-var win = null;
+let win = null;
 
 const createWindow = (id /*: number | null*/) => {
   const displays = screen.getAllDisplays();
@@ -34,7 +33,20 @@ const createWindow = (id /*: number | null*/) => {
 
 app.whenReady().then(() => {
   ipcMain.handle("ping", () => "pong");
-  const tray = new Tray(path.join(app.isPackaged ? process.resourcesPath : import.meta.dirname, 'icon.png'));
+  let iconpath = path.join(
+    import.meta.dirname,
+    "icons",
+    "linux",
+    "icons",
+    "512x512.png",
+  );
+  if (process.platform === "win32") {
+    iconpath = path.join(import.meta.dirname, "icons", "windows", "icon.ico");
+  }
+  if (process.platform === "darwin") {
+    iconpath = path.join(import.meta.dirname, "icons", "macos", "icon.icns");
+  }
+  const tray = new Tray(iconpath);
   const contextMenu = Menu.buildFromTemplate([
     {
       label: "Quit Stagetimer",
@@ -54,7 +66,7 @@ app.on("window-all-closed", () => {
 
 const hono = new Hono();
 
-hono.get("/app/health", async (c) => {
+hono.get("/app/health", (c) => {
   return c.json({
     running: true,
   });

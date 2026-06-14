@@ -21,7 +21,16 @@
   },
   "build": {
     "appId": "de.wissididom.stagetimer",
-    "publish": null
+    "publish": null,
+    "win": {
+      "icon": "icons/windows/icon.ico"
+    },
+    "mac": {
+      "icon": "icons/macos/icon.icns"
+    },
+    "linux": {
+      "icon": "icons/linux/icons/512x512.png"
+    }
   },
   "allowScripts": {
     "electron-winstaller@5.4.0": true
