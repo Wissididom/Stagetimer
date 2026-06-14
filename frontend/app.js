@@ -5,6 +5,26 @@ const screenSelect = document.getElementById('screenSelect');
 const minutesInput = document.getElementById('minutes');
 const secondsInput = document.getElementById('seconds');
 
+setInterval(async () => {
+	try {
+	    const response = await fetch('/app/health', {
+	      headers: {
+	        'Content-Type': 'application/json'
+	      }
+	    });
+	    const data = await response.json();
+	    if (data.running) {
+	    	document.getElementById('connected').style.display = 'block';
+	    	document.getElementById('notconnected').style.display = 'none';
+	    	return;
+	    }
+	  } catch (err) {
+	    console.error(err);
+	  }
+	  document.getElementById('connected').style.display = 'none';
+      document.getElementById('notconnected').style.display = 'block';
+}, 5 * 1000);
+
 function setStatus(data) {
   statusEl.textContent =
     typeof data === 'string'
