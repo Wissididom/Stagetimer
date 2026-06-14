@@ -1,44 +1,43 @@
-const statusEl = document.getElementById('status');
+const statusEl = document.getElementById("status");
 
-const screenSelect = document.getElementById('screenSelect');
+const screenSelect = document.getElementById("screenSelect");
 
-const minutesInput = document.getElementById('minutes');
-const secondsInput = document.getElementById('seconds');
+const minutesInput = document.getElementById("minutes");
+const secondsInput = document.getElementById("seconds");
 
 setInterval(async () => {
-	try {
-	    const response = await fetch('/app/health', {
-	      headers: {
-	        'Content-Type': 'application/json'
-	      }
-	    });
-	    const data = await response.json();
-	    if (data.running) {
-	    	document.getElementById('connected').style.display = 'block';
-	    	document.getElementById('notconnected').style.display = 'none';
-	    	return;
-	    }
-	  } catch (err) {
-	    console.error(err);
-	  }
-	  document.getElementById('connected').style.display = 'none';
-      document.getElementById('notconnected').style.display = 'block';
+  try {
+    const response = await fetch("/app/health", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    if (data.running) {
+      document.getElementById("connected").style.display = "block";
+      document.getElementById("notconnected").style.display = "none";
+      return;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  document.getElementById("connected").style.display = "none";
+  document.getElementById("notconnected").style.display = "block";
 }, 5 * 1000);
 
 function setStatus(data) {
-  statusEl.textContent =
-    typeof data === 'string'
-      ? data
-      : JSON.stringify(data, null, 2);
+  statusEl.textContent = typeof data === "string"
+    ? data
+    : JSON.stringify(data, null, 2);
 }
 
 async function api(path, options = {}) {
   try {
     const response = await fetch(path, {
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      ...options
+      ...options,
     });
 
     const data = await response.json();
@@ -53,21 +52,22 @@ async function api(path, options = {}) {
 }
 
 async function loadScreens() {
-  const screens = await api('/screens');
+  const screens = await api("/screens");
 
   if (!Array.isArray(screens)) {
     return;
   }
 
-  screenSelect.innerHTML = '';
+  screenSelect.innerHTML = "";
 
   for (const screen of screens) {
-    const option = document.createElement('option');
+    const option = document.createElement("option");
 
     option.value = screen.id;
 
-    option.textContent =
-      `${screen.label || 'Display'} (${screen.size.width}x${screen.size.height})`;
+    option.textContent = `${
+      screen.label || "Display"
+    } (${screen.size.width}x${screen.size.height})`;
 
     screenSelect.appendChild(option);
   }
@@ -76,68 +76,68 @@ async function loadScreens() {
 function getTimePayload() {
   return {
     min: Number(minutesInput.value),
-    sec: Number(secondsInput.value)
+    sec: Number(secondsInput.value),
   };
 }
 
 document
-  .getElementById('refreshScreensBtn')
-  .addEventListener('click', loadScreens);
+  .getElementById("refreshScreensBtn")
+  .addEventListener("click", loadScreens);
 
 document
-  .getElementById('showScreenBtn')
-  .addEventListener('click', async () => {
-    await api('/screen/show', {
-      method: 'POST',
+  .getElementById("showScreenBtn")
+  .addEventListener("click", async () => {
+    await api("/screen/show", {
+      method: "POST",
       body: JSON.stringify({
-        id: Number(screenSelect.value)
-      })
+        id: Number(screenSelect.value),
+      }),
     });
-    await api('/countdown/remaining-time', {
-      method: 'POST',
-      body: JSON.stringify(getTimePayload())
-    });
-  });
-
-document
-  .getElementById('closeScreenBtn')
-  .addEventListener('click', async () => {
-    await api('/screen/close', {
-      method: 'POST'
+    await api("/countdown/remaining-time", {
+      method: "POST",
+      body: JSON.stringify(getTimePayload()),
     });
   });
 
 document
-  .getElementById('setStartBtn')
-  .addEventListener('click', async () => {
-    await api('/countdown/start-time', {
-      method: 'POST',
-      body: JSON.stringify(getTimePayload())
+  .getElementById("closeScreenBtn")
+  .addEventListener("click", async () => {
+    await api("/screen/close", {
+      method: "POST",
     });
   });
 
 document
-  .getElementById('setRemainingBtn')
-  .addEventListener('click', async () => {
-    await api('/countdown/remaining-time', {
-      method: 'POST',
-      body: JSON.stringify(getTimePayload())
+  .getElementById("setStartBtn")
+  .addEventListener("click", async () => {
+    await api("/countdown/start-time", {
+      method: "POST",
+      body: JSON.stringify(getTimePayload()),
     });
   });
 
 document
-  .getElementById('startBtn')
-  .addEventListener('click', async () => {
-    await api('/countdown/start', {
-      method: 'POST'
+  .getElementById("setRemainingBtn")
+  .addEventListener("click", async () => {
+    await api("/countdown/remaining-time", {
+      method: "POST",
+      body: JSON.stringify(getTimePayload()),
     });
   });
 
 document
-  .getElementById('stopBtn')
-  .addEventListener('click', async () => {
-    await api('/countdown/stop', {
-      method: 'POST'
+  .getElementById("startBtn")
+  .addEventListener("click", async () => {
+    await api("/countdown/start", {
+      method: "POST",
+    });
+  });
+
+document
+  .getElementById("stopBtn")
+  .addEventListener("click", async () => {
+    await api("/countdown/stop", {
+      method: "POST",
     });
   });
 
