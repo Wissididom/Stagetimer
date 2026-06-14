@@ -57,7 +57,6 @@ app.whenReady().then(() => {
   ]);
   tray.setToolTip("Stagetimer");
   tray.setContextMenu(contextMenu);
-  ready = true;
 });
 
 app.on("window-all-closed", () => {
